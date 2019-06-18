@@ -1,17 +1,21 @@
 package com.example.socialmaps;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +23,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 
 import static com.example.socialmaps.util.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.socialmaps.util.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -27,6 +36,9 @@ import static com.example.socialmaps.util.Constants.PERMISSIONS_REQUEST_ENABLE_G
 public class MainActivity extends AppCompatActivity {
 
     private boolean mLocationPermissionGranted = false;
+    private FusedLocationProviderClient mFusedLocationClient;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,24 +48,46 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.registerUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,RegisterActivity.class));
+                startActivity(new Intent(MainActivity.this, RegisterActivity.class));
             }
         });
 
         findViewById(R.id.toMapActivity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,MapActivity.class));
+                startActivity(new Intent(MainActivity.this, MapActivity.class));
+            }
+        });
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void getLastKnownLocation() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()) {
+                    Location location = task.getResult();
+                    double lat = location.getLatitude();
+                    double lon = location.getLongitude();
+                    Log.d(TAG, "onComplete: lat: "+lat+" lon: "+lon);
+                }
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
         super.onResume();
         if(checkMapServices()) {
             if(mLocationPermissionGranted) {
                 doStuff();
+                getLastKnownLocation();
             } else {
                 getLocationPermission();
             }
@@ -97,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
@@ -108,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             doStuff();
+            getLastKnownLocation();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -149,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -156,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
                     doStuff();
+                    getLastKnownLocation();
                 }
                 else{
                     getLocationPermission();
