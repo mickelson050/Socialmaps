@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">socialmaps</string>
     <string name="google_api_key_new">AIzaSyALJZuq_Fj4K-NYoFqE5tOhW4vPiY5nHr8</string>
+    <string name="title_activity_map">MapActivity</string>
 </resources>
