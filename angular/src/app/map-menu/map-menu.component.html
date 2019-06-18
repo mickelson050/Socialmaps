@@ -1,0 +1,10 @@
+<h3>Berichten van vrienden</h3>
+
+
+
+<div>
+	<ul class="list-group" style="width: 100%">
+		<a href="#" *ngFor="let message of availableMessages" (click)="zoomInOnMessage(message)"><li class="list-group-item">{{ message.owner.firstName +
+		" - " + message.latitude + ", " + message.longitude }}</li></a>
+	</ul>
+</div>
