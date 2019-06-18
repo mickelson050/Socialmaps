@@ -40,9 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void construct(){
-        userName =(EditText)findViewById(R.id.registerusername);
+        userName =(EditText)findViewById(R.id.registerFirstName);
         userPassword =(EditText)findViewById(R.id.registerUserPassword);
-        userEmail =(EditText)findViewById(R.id.registerUserEmail);
+        userEmail =(EditText)findViewById(R.id.registerEmail);
         register = (Button)findViewById(R.id.registerUser);
         signInActivity = (TextView)findViewById(R.id.loginActivity);
     }
