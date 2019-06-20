@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    public double lat;
+    public double lon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.toTextActivity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, TextPostActivity.class));
+            }
+        });
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
@@ -72,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 if(task.isSuccessful()) {
                     Location location = task.getResult();
-                    double lat = location.getLatitude();
-                    double lon = location.getLongitude();
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
                     Log.d(TAG, "onComplete: lat: "+lat+" lon: "+lon);
                 }
             }
