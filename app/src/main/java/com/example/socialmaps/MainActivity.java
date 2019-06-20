@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    public double lat;
-    public double lon;
+    public static double lat;
+    public static double lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +72,16 @@ public class MainActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+    public static Double getLat() {
+        return lat;
+    }
+
+    public static Double getLon() {
+        return lon;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void getLastKnownLocation() {
+    public void getLastKnownLocation() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }

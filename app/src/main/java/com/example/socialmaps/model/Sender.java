@@ -1,10 +1,14 @@
 package com.example.socialmaps.model;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.socialmaps.MainActivity;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,6 +26,8 @@ public class Sender extends AsyncTask<Void,Void,String> {
     String urlAddress;
     EditText userTxt,contentTxt,publiTxt;
     String user,content, publi;
+    Double lat = MainActivity.getLat();
+    Double lon = MainActivity.getLon();
     ProgressDialog pd;
     /*
     1.OUR CONSTRUCTOR
@@ -70,6 +76,10 @@ public class Sender extends AsyncTask<Void,Void,String> {
         if(response != null)
         {
 //SUCCESS
+            pd=new ProgressDialog(c);
+            pd.setTitle("Response");
+            pd.setMessage(response);
+            pd.show();
             Toast.makeText(c,response,Toast.LENGTH_LONG).show();
             userTxt.setText("");
             contentTxt.setText("");
@@ -97,7 +107,7 @@ public class Sender extends AsyncTask<Void,Void,String> {
             OutputStream os=con.getOutputStream();
 //WRITE
             BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-            bw.write(new DataPackager(user,content,publi).packData());
+            bw.write(new DataPackager(user,lat,lon,content,publi).packData());
             bw.flush();
 //RELEASE RES
             bw.close();
