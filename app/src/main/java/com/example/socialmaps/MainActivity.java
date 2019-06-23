@@ -39,10 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
 
-    public LocationManager mLocationManager;
-    private long minTime = 0;
-    private float minDistance = 0;
-
     private static final String TAG = "MainActivity";
 
     public static double lat;
@@ -76,38 +72,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
-                minDistance, mLocationListener);
     }
 
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
 
     public static Double getLat() {
         return lat;
