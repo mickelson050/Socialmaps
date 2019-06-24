@@ -71,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.toCameraActivity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, CameraActivity.class));
+            }
+        });
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
