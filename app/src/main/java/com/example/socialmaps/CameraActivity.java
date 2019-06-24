@@ -22,9 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.socialmaps.model.TestSender;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class CameraActivity extends AppCompatActivity {
@@ -56,6 +59,21 @@ public class CameraActivity extends AppCompatActivity {
             //takePictureButton.setEnabled(false);
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
+
+        // TODO
+        // Deze test weghalen
+
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        /*Adding elements to HashMap*/
+        hmap.put("User", "88");
+        hmap.put("Lat", "10.99");
+        hmap.put("Lon", "10.99");
+        hmap.put("Content", "Custom sender class test");
+        hmap.put("Public", "0");
+
+        TestSender t = new TestSender();
+        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
     }
 
     @Override
