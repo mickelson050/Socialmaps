@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RegisterActivity extends AppCompatActivity {
+import com.example.socialmaps.model.Register;
 
-    private EditText userName, userPassword, userEmail;
+public class RegisterActivity extends AppCompatActivity {
+    String urlAdress = "http://socialmaps.dx.am/register.php";
+    private EditText userName, userFirstName, userLastName, userPassword, userConfirmPassword, userEmail, userBirthdate;
+    private RadioButton userMale, userFemale;
     private Button register;
     private TextView signInActivity;
 
@@ -25,8 +29,9 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(validate()){
-                    //send data naar de database
+                if(register()){
+                    Register r = new Register(RegisterActivity.this,urlAdress, userFirstName,userLastName,userName,userPassword,userBirthdate, userEmail);
+                    r.execute();
                 }
             }
         });
@@ -40,25 +45,65 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void construct(){
-        userName =(EditText)findViewById(R.id.registerFirstName);
-        userPassword =(EditText)findViewById(R.id.registerUserPassword);
-        userEmail =(EditText)findViewById(R.id.registerEmail);
-        register = (Button)findViewById(R.id.registerUser);
-        signInActivity = (TextView)findViewById(R.id.loginActivity);
-    }
+        userName = (EditText) findViewById(R.id.registerUsername);
+        userFirstName = (EditText) findViewById(R.id.registerFirstName);
+        userLastName = (EditText) findViewById(R.id.registerLastName);
+        userBirthdate = (EditText) findViewById(R.id.registerBirthdate);
+        userPassword = (EditText) findViewById(R.id.registerUserPassword);
+        userConfirmPassword = (EditText) findViewById(R.id.registerConfirmPassword);
+        userEmail = (EditText) findViewById(R.id.registerEmail);
+        userMale = (RadioButton) findViewById(R.id.registerMale);
+        userFemale = (RadioButton) findViewById(R.id.registerFemale);
+        signInActivity = (TextView) findViewById(R.id.loginActivity);
 
-    private boolean validate(){
-        Boolean result = false;
+        register = (Button) findViewById(R.id.register); }
 
-        String name = userName.getText().toString();
+    private Boolean register() {
+        boolean result = false;
+        String username = userName.getText().toString();
         String password = userPassword.getText().toString();
+        String confirmpassword = userConfirmPassword.getText().toString();
         String email = userEmail.getText().toString();
+        String firstname = userFirstName.getText().toString();
+        String lastName = userLastName.getText().toString();
+        String birthdate = userBirthdate.getText().toString();
+        String male = userMale.getText().toString();
+        String female = userFemale.getText().toString();
 
-        if (name.isEmpty() && password.isEmpty() && email.isEmpty()){
-            Toast.makeText(this,"Not everything is filled in", Toast.LENGTH_SHORT).show();
-        }else {
-            result =true;
+        if (password.isEmpty() || confirmpassword.isEmpty()) {
+            Toast.makeText(this, "Please fill the password in twice", Toast.LENGTH_SHORT).show();
         }
+        else if (!password.equals(confirmpassword)) {
+            Toast.makeText(this, "please fill the same password in twice", Toast.LENGTH_SHORT).show();
+        }
+
+        else if (username.isEmpty()) {
+            Toast.makeText(this, "Please fill in your username", Toast.LENGTH_SHORT).show();
+        }
+
+        else if (firstname.isEmpty()) {
+            Toast.makeText(this, "Please fill in your first name", Toast.LENGTH_SHORT).show();
+        }
+
+        else if (lastName.isEmpty()) {
+            Toast.makeText(this, "Please fill in your lastname", Toast.LENGTH_SHORT).show();
+        }
+
+        else if (email.isEmpty()) {
+            Toast.makeText(this, "Please fill in your email", Toast.LENGTH_SHORT).show();
+
+        }
+        else if(birthdate.isEmpty()) {
+            Toast.makeText(this, "Please fill in your birthdate", Toast.LENGTH_SHORT).show();
+        }
+        else if (male.isEmpty() && female.isEmpty()){
+            Toast.makeText(this, "please fill in your gender", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            result = true;
+        }
+
         return result;
     }
+
 }
