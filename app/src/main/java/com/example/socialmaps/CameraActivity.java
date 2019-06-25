@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.socialmaps.model.FileSender;
 import com.example.socialmaps.model.TestSender;
 
 import java.io.File;
@@ -66,14 +67,14 @@ public class CameraActivity extends AppCompatActivity {
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
-        hmap.put("User", "88");
-        hmap.put("Lat", "10.99");
-        hmap.put("Lon", "10.99");
-        hmap.put("Content", "Custom sender class test");
-        hmap.put("Public", "0");
-
-        TestSender t = new TestSender();
-        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
+//        hmap.put("User", "88");
+//        hmap.put("Lat", "10.99");
+//        hmap.put("Lon", "10.99");
+//        hmap.put("Content", "Custom sender class test");
+//        hmap.put("Public", "0");
+//
+//        TestSender t = new TestSender();
+//        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
     }
 
     @Override
@@ -101,6 +102,11 @@ public class CameraActivity extends AppCompatActivity {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
                 imageView.setImageURI(file);
+                Log.v(TAG, "saved file: " + file.toString());
+                Log.v(TAG, "get external" + Environment.getExternalStorageDirectory());
+
+                FileSender fs = new FileSender();
+                fs.doThePost("http://socialmaps.dx.am/upload_photo.php",file.toString());
             }
         }
     }

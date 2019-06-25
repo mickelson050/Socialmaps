@@ -9,7 +9,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.example.socialmaps.model.PhotoSender;
 import com.example.socialmaps.model.Sender;
+import com.example.socialmaps.model.TestSender;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,6 +24,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.HashMap;
+
 
 public class TextPostActivity extends AppCompatActivity {
 
@@ -30,6 +34,9 @@ public class TextPostActivity extends AppCompatActivity {
     public LocationManager mLocationManager;
     private long minTime = 0;
     private float minDistance = 0;
+
+    public double lat;
+    public double lon;
 
     String urlAddress="http://socialmaps.dx.am/new_text_post.php";
     EditText userTxt,contentTxt,publiTxt;
@@ -50,8 +57,7 @@ public class TextPostActivity extends AppCompatActivity {
         findViewById(R.id.saveBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Sender s=new Sender(TextPostActivity.this,urlAddress,userTxt,contentTxt,publiTxt);
-                s.execute();
+                postTheStuff();
             }
         });
 
@@ -62,6 +68,7 @@ public class TextPostActivity extends AppCompatActivity {
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
                 minDistance, mLocationListener);
+
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -69,6 +76,8 @@ public class TextPostActivity extends AppCompatActivity {
         public void onLocationChanged(final Location location) {
             //your code here
             Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
+            lat = location.getLatitude();
+            lon = location.getLongitude();
         }
 
         @Override
@@ -86,5 +95,27 @@ public class TextPostActivity extends AppCompatActivity {
 
         }
     };
+
+    private void postTheStuff() {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        /*Adding elements to HashMap*/
+        hmap.put("User", userTxt.getText().toString());
+        hmap.put("Lat", Double.toString(lat));
+        hmap.put("Lon", Double.toString(lon));
+        hmap.put("Content", contentTxt.getText().toString());
+        hmap.put("Public", publiTxt.getText().toString());
+
+        TestSender t = new TestSender();
+        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
+
+        userTxt.setText("");
+        contentTxt.setText("");
+        publiTxt.setText("");
+    }
+
+    public void postDone() {
+
+    }
 
 }

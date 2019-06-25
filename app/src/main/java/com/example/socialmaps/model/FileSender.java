@@ -1,8 +1,10 @@
 package com.example.socialmaps.model;
 
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,29 +20,25 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-public class TestSender {
+public class FileSender {
 
     private static final String TAG = "TestSender";
 
-
     private String URL;
-    private HashMap<String, String> values;
+    private String fileName;
 
-    private String resp;
-
-    public void doThePost(String URL, HashMap<String, String> values) {
+    public void doThePost(String URL, String fileName) {
         this.URL = URL;
-        this.values = values;
+        this.fileName = fileName;
 
         new PostDataAsyncTask().execute();
-    }
-
-    public String getResp() {
-        return resp;
     }
 
     public class PostDataAsyncTask extends AsyncTask<String, String, String> {
@@ -54,18 +52,7 @@ public class TestSender {
         protected String doInBackground(String... strings) {
             try {
 
-                // 1 = post text data, 2 = post file
-                int actionChoice = 1;
-
-                // post a text data
-                if(actionChoice==1){
-                    postText();
-                }
-
-                // post a file
-                else{
-                    //postFile();
-                }
+                postFile();
 
             } catch (NullPointerException e) {
                 e.printStackTrace();
@@ -81,30 +68,29 @@ public class TestSender {
         }
     }
 
-    public void postText(){
+    public void postFile(){
         try{
-            // url where the data will be posted
+
+            // the file to be posted
+            String textFile = "/storage/emulated/0/Pictures/SocialMaps/IMG_20190625_014358.jpg";
+            Log.v(TAG, "file: " + textFile);
+
+            // the URL where the file will be posted
             String postReceiverUrl = URL;
             Log.v(TAG, "postURL: " + postReceiverUrl);
 
-            // HttpClient
+            // new HttpClient
             HttpClient httpClient = new DefaultHttpClient();
 
             // post header
             HttpPost httpPost = new HttpPost(postReceiverUrl);
 
-            // add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            File file = new File(textFile);
+            FileBody fileBody = new FileBody(file);
 
-            // Going trough Hashmap and adding to List
-            Set set = values.entrySet();
-            Iterator iterator = set.iterator();
-            while(iterator.hasNext()) {
-                Map.Entry mentry = (Map.Entry)iterator.next();
-                nameValuePairs.add(new BasicNameValuePair((String)mentry.getKey(), (String)mentry.getValue()));
-            }
-
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+            reqEntity.addPart("file", fileBody);
+            httpPost.setEntity(reqEntity);
 
             // execute HTTP post request
             HttpResponse response = httpClient.execute(httpPost);
@@ -114,14 +100,13 @@ public class TestSender {
 
                 String responseStr = EntityUtils.toString(resEntity).trim();
                 Log.v(TAG, "Response: " +  responseStr);
-                resp = responseStr;
 
                 // you can add an if statement here and do other actions based on the response
             }
 
-        } catch (ClientProtocolException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

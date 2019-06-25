@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,13 +19,28 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private MapView mMapView;
 
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+
+    private GoogleMap map;
+
+    private static final String TAG = "MapActivity";
+
+    private TestSender t;
+    private JSONArray mapPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +94,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap map) {
+        this.map = map;
+        getMapPoints();
         map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -101,6 +119,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    private void getMapPoints() {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        /*Adding elements to HashMap*/
+        hmap.put("User", "88");
+
+        t = new TestSender();
+        t.doThePost("http://socialmaps.dx.am/get_text_posts.php",hmap);
+
+
+        waitForPoints();
+
+    }
+
+    private synchronized void waitForPoints() {
+        while (t.getResp()==null);
+        Log.v(TAG,t.getResp());
+        try {
+            mapPoints = new JSONArray(t.getResp());
+            placePointsOnMap();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void placePointsOnMap() throws JSONException {
+        for (int i = 0; i < mapPoints.length(); i++) {
+            JSONObject obj = mapPoints.getJSONObject(i);
+            String user = obj.getString("user");
+            Double lat = Double.parseDouble(obj.getString("lat"));
+            Double lon = Double.parseDouble(obj.getString("lon"));
+            String content = obj.getString("content");
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(content));
+        }
     }
 
 }
