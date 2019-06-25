@@ -1,7 +1,9 @@
 package com.example.socialmaps.model;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +32,14 @@ public class TestSender {
 
     private static final String TAG = "TestSender";
 
+    Context c;
+
     private String URL;
     private HashMap<String, String> values;
+
+    public TestSender(Context c) {
+        this.c = c;
+    }
 
     public void doThePost(String URL, HashMap<String, String> values) {
         this.URL = URL;
@@ -111,6 +119,7 @@ public class TestSender {
 
                 String responseStr = EntityUtils.toString(resEntity).trim();
                 Log.v(TAG, "Response: " +  responseStr);
+
 
                 // you can add an if statement here and do other actions based on the response
             }
