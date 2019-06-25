@@ -24,6 +24,7 @@ import android.widget.ImageView;
 
 import com.example.socialmaps.model.FileSender;
 import com.example.socialmaps.model.TestSender;
+import com.example.socialmaps.model.UploadFileAsync;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -105,8 +106,10 @@ public class CameraActivity extends AppCompatActivity {
                 Log.v(TAG, "saved file: " + file.toString());
                 Log.v(TAG, "get external" + Environment.getExternalStorageDirectory());
 
-                FileSender fs = new FileSender();
-                fs.doThePost("http://socialmaps.dx.am/upload_photo.php",file.toString());
+                String fileDir = file.toString().substring(6);
+
+                UploadFileAsync ufa = new UploadFileAsync(fileDir);
+                ufa.execute("");
             }
         }
     }
