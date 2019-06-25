@@ -59,12 +59,16 @@ public class UploadFileAsync extends AsyncTask<String, Void, String> {
                     conn.setRequestProperty("Content-Type",
                             "multipart/form-data;boundary=" + boundary);
                     conn.setRequestProperty("bill", sourceFileUri);
+                    conn.setRequestProperty("testy", "Hallo_daar");
 
                     dos = new DataOutputStream(conn.getOutputStream());
 
                     dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"testy\""+lineEnd+lineEnd+"hallo_daaar" + lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
                     dos.writeBytes("Content-Disposition: form-data; name=\"bill\";filename=\""
                             + sourceFileUri + "\"" + lineEnd);
+
 
                     dos.writeBytes(lineEnd);
 
@@ -98,6 +102,8 @@ public class UploadFileAsync extends AsyncTask<String, Void, String> {
                     //serverResponseCode = conn.getResponseCode();
                     String serverResponseMessage = conn
                             .getResponseMessage();
+
+                    Log.v(TAG,"Server response: " + serverResponseMessage);
 
 //                    if (serverResponseCode == 200) {
 //
