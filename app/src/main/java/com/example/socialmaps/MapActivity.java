@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,10 +35,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 
+    private GoogleMap map;
+
     private static final String TAG = "MapActivity";
 
     private TestSender t;
-    private JSONObject mapPoints;
+    private JSONArray mapPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +58,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMapView.onCreate(mapViewBundle);
 
         mMapView.getMapAsync(this);
-
-        getMapPoints();
     }
 
     @Override
@@ -93,6 +94,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap map) {
+        this.map = map;
+        getMapPoints();
         map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -136,9 +139,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         while (t.getResp()==null);
         Log.v(TAG,t.getResp());
         try {
-            mapPoints = new JSONObject(t.getResp());
+            mapPoints = new JSONArray(t.getResp());
+            placePointsOnMap();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void placePointsOnMap() throws JSONException {
+        for (int i = 0; i < mapPoints.length(); i++) {
+            JSONObject obj = mapPoints.getJSONObject(i);
+            String user = obj.getString("user");
+            Double lat = Double.parseDouble(obj.getString("lat"));
+            Double lon = Double.parseDouble(obj.getString("lon"));
+            String content = obj.getString("content");
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(content));
         }
     }
 
