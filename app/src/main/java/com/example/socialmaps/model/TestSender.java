@@ -1,11 +1,8 @@
 package com.example.socialmaps.model;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +18,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -32,20 +26,21 @@ public class TestSender {
 
     private static final String TAG = "TestSender";
 
-    Context c;
 
     private String URL;
     private HashMap<String, String> values;
 
-    public TestSender(Context c) {
-        this.c = c;
-    }
+    private String resp;
 
     public void doThePost(String URL, HashMap<String, String> values) {
         this.URL = URL;
         this.values = values;
 
         new PostDataAsyncTask().execute();
+    }
+
+    public String getResp() {
+        return resp;
     }
 
     public class PostDataAsyncTask extends AsyncTask<String, String, String> {
@@ -119,7 +114,7 @@ public class TestSender {
 
                 String responseStr = EntityUtils.toString(resEntity).trim();
                 Log.v(TAG, "Response: " +  responseStr);
-
+                resp = responseStr;
 
                 // you can add an if statement here and do other actions based on the response
             }

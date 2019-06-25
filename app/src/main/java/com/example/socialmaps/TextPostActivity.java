@@ -106,12 +106,16 @@ public class TextPostActivity extends AppCompatActivity {
         hmap.put("Content", contentTxt.getText().toString());
         hmap.put("Public", publiTxt.getText().toString());
 
-        TestSender t = new TestSender(TextPostActivity.this);
+        TestSender t = new TestSender();
         t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
 
         userTxt.setText("");
         contentTxt.setText("");
         publiTxt.setText("");
+    }
+
+    public void postDone() {
+
     }
 
 }
