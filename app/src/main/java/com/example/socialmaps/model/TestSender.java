@@ -18,9 +18,13 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+
 
 public class TestSender {
 
@@ -44,6 +48,8 @@ public class TestSender {
     }
 
     public class PostDataAsyncTask extends AsyncTask<String, String, String> {
+
+
 
         protected void onPreExecute() {
             super.onPreExecute();
@@ -96,6 +102,8 @@ public class TestSender {
             // add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
+            JSONObject sendValues = new JSONObject(values);
+
             // Going trough Hashmap and adding to List
             Set set = values.entrySet();
             Iterator iterator = set.iterator();
@@ -104,7 +112,13 @@ public class TestSender {
                 nameValuePairs.add(new BasicNameValuePair((String)mentry.getKey(), (String)mentry.getValue()));
             }
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            String sendThis = sendValues.toString();
+
+            StringEntity requestEntity = new StringEntity(sendThis);
+
+            httpPost.setEntity(requestEntity);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
 
             // execute HTTP post request
             HttpResponse response = httpClient.execute(httpPost);

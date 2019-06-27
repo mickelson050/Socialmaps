@@ -128,7 +128,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         hmap.put("User", "88");
 
         t = new TestSender();
-        t.doThePost("http://socialmaps.dx.am/get_text_posts.php",hmap);
+        t.doThePost("http://socialmaps.openode.io/api/getAllPosts",hmap);
 
 
         waitForPoints();

@@ -1,10 +1,20 @@
 package com.example.socialmaps;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
 
 import android.Manifest;
 import android.content.Context;
@@ -24,6 +34,7 @@ import android.widget.ImageView;
 
 import com.example.socialmaps.model.FileSender;
 import com.example.socialmaps.model.TestSender;
+import com.example.socialmaps.model.UploadFileAsync;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -48,6 +59,7 @@ public class CameraActivity extends AppCompatActivity {
     String currentPhotoPath;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,22 +72,8 @@ public class CameraActivity extends AppCompatActivity {
             //takePictureButton.setEnabled(false);
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
-
-        // TODO
-        // Deze test weghalen
-
-        HashMap<String, String> hmap = new HashMap<String, String>();
-
-        /*Adding elements to HashMap*/
-//        hmap.put("User", "88");
-//        hmap.put("Lat", "10.99");
-//        hmap.put("Lon", "10.99");
-//        hmap.put("Content", "Custom sender class test");
-//        hmap.put("Public", "0");
-//
-//        TestSender t = new TestSender();
-//        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -88,13 +86,15 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void takePicture(View view) {
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        file = Uri.fromFile(getOutputMediaFile());
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, file);
+        if(MainActivity.getLat() != 0 && MainActivity.getLon() != 0) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            file = Uri.fromFile(getOutputMediaFile());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, file);
 
-        startActivityForResult(intent, 100);
+            startActivityForResult(intent, 100);
+        }
     }
 
     @Override
@@ -105,8 +105,17 @@ public class CameraActivity extends AppCompatActivity {
                 Log.v(TAG, "saved file: " + file.toString());
                 Log.v(TAG, "get external" + Environment.getExternalStorageDirectory());
 
-                FileSender fs = new FileSender();
-                fs.doThePost("http://socialmaps.dx.am/upload_photo.php",file.toString());
+                String fileDir = file.toString().substring(6);
+
+                Log.v(TAG, "normal lat and lon: " + MainActivity.getLat() + MainActivity.getLon());
+
+                String latt= String.valueOf(MainActivity.getLat());
+                String lonn = String.valueOf(MainActivity.getLon());
+
+                Log.v(TAG, "parameter lat and lon: " + latt + lonn);
+
+                UploadFileAsync ufa = new UploadFileAsync(fileDir,"88",latt,lonn,"0");
+                ufa.execute("");
             }
         }
     }
