@@ -46,14 +46,6 @@ public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = "CameraActivity";
 
-    public LocationManager mLocationManager;
-    private long minTime = 0;
-    private float minDistance = 0;
-
-    public double lat;
-    public double lon;
-
-
     private ImageView cameraView;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -80,40 +72,7 @@ public class CameraActivity extends AppCompatActivity {
             //takePictureButton.setEnabled(false);
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
-
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
-                minDistance, mLocationListener);
     }
-
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
 
 
     @Override
@@ -127,7 +86,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void takePicture(View view) {
-        if(lat != 0 && lon != 0) {
+        if(MainActivity.getLat() != 0 && MainActivity.getLon() != 0) {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -148,10 +107,10 @@ public class CameraActivity extends AppCompatActivity {
 
                 String fileDir = file.toString().substring(6);
 
-                Log.v(TAG, "normal lat and lon: " + lat + lon);
+                Log.v(TAG, "normal lat and lon: " + MainActivity.getLat() + MainActivity.getLon());
 
-                String latt= String.valueOf(lat);
-                String lonn = String.valueOf(lon);
+                String latt= String.valueOf(MainActivity.getLat());
+                String lonn = String.valueOf(MainActivity.getLon());
 
                 Log.v(TAG, "parameter lat and lon: " + latt + lonn);
 

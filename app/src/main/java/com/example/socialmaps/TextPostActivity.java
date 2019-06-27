@@ -31,13 +31,6 @@ public class TextPostActivity extends AppCompatActivity {
 
     private static final String TAG = "TextPostActivity";
 
-    public LocationManager mLocationManager;
-    private long minTime = 0;
-    private float minDistance = 0;
-
-    public double lat;
-    public double lon;
-
     String urlAddress="http://socialmaps.dx.am/new_text_post.php";
     EditText userTxt,contentTxt,publiTxt;
     Button saveBtn;
@@ -61,48 +54,15 @@ public class TextPostActivity extends AppCompatActivity {
             }
         });
 
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
-                minDistance, mLocationListener);
-
     }
-
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
 
     private void postTheStuff() {
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
         hmap.put("user", userTxt.getText().toString());
-        hmap.put("lat", Double.toString(lat));
-        hmap.put("lon", Double.toString(lon));
+        hmap.put("lat", Double.toString(MainActivity.getLat()));
+        hmap.put("lon", Double.toString(MainActivity.getLon()));
         hmap.put("content", contentTxt.getText().toString());
         hmap.put("public", publiTxt.getText().toString());
 
