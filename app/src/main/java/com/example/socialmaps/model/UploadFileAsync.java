@@ -14,10 +14,18 @@ public class UploadFileAsync extends AsyncTask<String, Void, String> {
     private static final String TAG = "UploadFileAsync";
 
     private String fileUri;
+    private String user;
+    private String lat;
+    private String lon;
+    private String publi;
 
-    public UploadFileAsync(String fileUri) {
+    public UploadFileAsync(String fileUri, String user, String lat, String lon, String publi) {
         this.fileUri = fileUri;
-        Log.v(TAG, "file uri: " + fileUri);
+        this.user = user;
+        this.lat = lat;
+        this.lon = lon;
+        this.publi = publi;
+        Log.v(TAG, "file uri: " + fileUri + " lat: " + lat + " lon: " + lon);
     }
 
     @Override
@@ -59,12 +67,21 @@ public class UploadFileAsync extends AsyncTask<String, Void, String> {
                     conn.setRequestProperty("Content-Type",
                             "multipart/form-data;boundary=" + boundary);
                     conn.setRequestProperty("bill", sourceFileUri);
-                    conn.setRequestProperty("testy", "Hallo_daar");
+                    conn.setRequestProperty("user", user);
+                    conn.setRequestProperty("lat", lat);
+                    conn.setRequestProperty("lon", lon);
+                    conn.setRequestProperty("publi", publi);
 
                     dos = new DataOutputStream(conn.getOutputStream());
 
                     dos.writeBytes(twoHyphens + boundary + lineEnd);
-                    dos.writeBytes("Content-Disposition: form-data; name=\"testy\""+lineEnd+lineEnd+"hallo_daaar" + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"user\""+lineEnd+lineEnd+ user + lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"lat\""+lineEnd+lineEnd+ lat + lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"lon\""+lineEnd+lineEnd+ lon + lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"publi\""+lineEnd+lineEnd+ publi + lineEnd);
                     dos.writeBytes(twoHyphens + boundary + lineEnd);
                     dos.writeBytes("Content-Disposition: form-data; name=\"bill\";filename=\""
                             + sourceFileUri + "\"" + lineEnd);

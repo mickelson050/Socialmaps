@@ -1,10 +1,20 @@
 package com.example.socialmaps;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
 
 import android.Manifest;
 import android.content.Context;
@@ -36,6 +46,14 @@ public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = "CameraActivity";
 
+    public LocationManager mLocationManager;
+    private long minTime = 0;
+    private float minDistance = 0;
+
+    public double lat;
+    public double lon;
+
+
     private ImageView cameraView;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -49,6 +67,7 @@ public class CameraActivity extends AppCompatActivity {
     String currentPhotoPath;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,21 +81,40 @@ public class CameraActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
 
-        // TODO
-        // Deze test weghalen
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        HashMap<String, String> hmap = new HashMap<String, String>();
-
-        /*Adding elements to HashMap*/
-//        hmap.put("User", "88");
-//        hmap.put("Lat", "10.99");
-//        hmap.put("Lon", "10.99");
-//        hmap.put("Content", "Custom sender class test");
-//        hmap.put("Public", "0");
-//
-//        TestSender t = new TestSender();
-//        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
+                minDistance, mLocationListener);
     }
+
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            //your code here
+            Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -89,13 +127,15 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void takePicture(View view) {
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        file = Uri.fromFile(getOutputMediaFile());
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, file);
+        if(lat != 0 && lon != 0) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            file = Uri.fromFile(getOutputMediaFile());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, file);
 
-        startActivityForResult(intent, 100);
+            startActivityForResult(intent, 100);
+        }
     }
 
     @Override
@@ -108,7 +148,14 @@ public class CameraActivity extends AppCompatActivity {
 
                 String fileDir = file.toString().substring(6);
 
-                UploadFileAsync ufa = new UploadFileAsync(fileDir);
+                Log.v(TAG, "normal lat and lon: " + lat + lon);
+
+                String latt= String.valueOf(lat);
+                String lonn = String.valueOf(lon);
+
+                Log.v(TAG, "parameter lat and lon: " + latt + lonn);
+
+                UploadFileAsync ufa = new UploadFileAsync(fileDir,"88",latt,lonn,"0");
                 ufa.execute("");
             }
         }

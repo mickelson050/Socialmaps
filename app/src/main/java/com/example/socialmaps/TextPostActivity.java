@@ -100,14 +100,14 @@ public class TextPostActivity extends AppCompatActivity {
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
-        hmap.put("User", userTxt.getText().toString());
-        hmap.put("Lat", Double.toString(lat));
-        hmap.put("Lon", Double.toString(lon));
-        hmap.put("Content", contentTxt.getText().toString());
-        hmap.put("Public", publiTxt.getText().toString());
+        hmap.put("user", userTxt.getText().toString());
+        hmap.put("lat", Double.toString(lat));
+        hmap.put("lon", Double.toString(lon));
+        hmap.put("content", contentTxt.getText().toString());
+        hmap.put("public", publiTxt.getText().toString());
 
         TestSender t = new TestSender();
-        t.doThePost("http://socialmaps.dx.am/new_text_post.php",hmap);
+        t.doThePost("http://socialmaps.openode.io/api/new_text_post",hmap);
 
         userTxt.setText("");
         contentTxt.setText("");
