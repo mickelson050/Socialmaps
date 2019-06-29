@@ -6,9 +6,11 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.socialmaps.model.TestSender;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -102,6 +104,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
         map.setMyLocationEnabled(true);
+        centerMapOnMyLocation();
     }
 
     @Override
@@ -153,18 +156,55 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String user = obj.getString("user");
             Double lat = Double.parseDouble(obj.getString("lat"));
             Double lon = Double.parseDouble(obj.getString("lon"));
+            String content = obj.getString("content");
             String _id = obj.getString("_id");
-            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(_id));
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(_id).snippet(content));
         }
     }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        Log.v(TAG, "Marker: " + marker.getTitle());
+        String markTitle = marker.getTitle();
+
+        Log.v(TAG, "Marker: " + markTitle);
+
+        double latOffset =  0.0003;
+        double lonOffset =  0.0006;
+
+        double lat = MainActivity.getLat();
+        double lon = MainActivity.getLon();
+
+        double markerLat = marker.getPosition().latitude;
+        double markerLon = marker.getPosition().longitude;
+
+        Log.v(TAG, "Marker position: " + markerLat + " , " + markerLon);
+        Log.v(TAG, "Your position: " + lat + " , " + lon);
+
+        // If user latitude is within the range of the marker
+        if(markerLat-latOffset <= lat && markerLat+latOffset >= lat) {
+            // And if user longitude is within the range of the marker
+            if(markerLon-lonOffset <= lon && markerLon+lonOffset >= lon) {
+                Log.v(TAG, "Content: " + marker.getSnippet());
+                Log.v(TAG, "IN RANGE");
+            }
+        }
+
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
         return true;
 
+    }
+
+    private void centerMapOnMyLocation() {
+
+        LatLng myLocation = new LatLng(MainActivity.getLat(),
+                    MainActivity.getLon());
+
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
     }
 
 }
