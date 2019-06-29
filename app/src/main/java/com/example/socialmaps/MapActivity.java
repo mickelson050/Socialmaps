@@ -1,6 +1,8 @@
 package com.example.socialmaps;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -187,6 +189,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if(markerLon-lonOffset <= lon && markerLon+lonOffset >= lon) {
                 Log.v(TAG, "Content: " + marker.getSnippet());
                 Log.v(TAG, "IN RANGE");
+
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+                dlgAlert.setMessage(marker.getSnippet());
+                dlgAlert.setTitle("New message found");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //dismiss the dialog
+                            }
+                        });
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
             }
         }
 
