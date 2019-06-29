@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,7 +30,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private MapView mMapView;
 
@@ -95,8 +96,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
+        map.setOnMarkerClickListener(this);
         getMapPoints();
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -152,9 +153,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String user = obj.getString("user");
             Double lat = Double.parseDouble(obj.getString("lat"));
             Double lon = Double.parseDouble(obj.getString("lon"));
-            String content = obj.getString("content");
-            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(content));
+            String _id = obj.getString("_id");
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(_id));
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        Log.v(TAG, "Marker: " + marker.getTitle());
+
+        return true;
+
     }
 
 }
