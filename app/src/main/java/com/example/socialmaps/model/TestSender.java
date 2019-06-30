@@ -47,6 +47,10 @@ public class TestSender {
         return resp;
     }
 
+    public void resetResp() {
+        resp = null;
+    }
+
     public class PostDataAsyncTask extends AsyncTask<String, String, String> {
 
 

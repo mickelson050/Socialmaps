@@ -20,8 +20,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -29,6 +31,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import static com.example.socialmaps.util.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.socialmaps.util.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -48,11 +56,25 @@ public class MainActivity extends AppCompatActivity {
     public static double lat;
     public static double lon;
 
+    private TestSender t;
+
+    private EditText loginEmail;
+    private EditText loginPassword;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginEmail= (EditText) findViewById(R.id.loginEmail);
+                loginPassword= (EditText) findViewById(R.id.loginPassword);
+                login();
+            }
+        });
 
         findViewById(R.id.registerUser).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +113,39 @@ public class MainActivity extends AppCompatActivity {
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
                 minDistance, mLocationListener);
+    }
+
+    private void login() {
+        HashMap<String, String> loginMap = new HashMap<String, String>();
+
+        loginMap.put("email", loginEmail.getText().toString());
+        loginMap.put("password", loginPassword.getText().toString());
+
+        t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/login",loginMap);
+
+        waitForResp();
+    }
+
+    private synchronized void waitForResp() {
+        while (t.getResp()==null);
+        Log.v(TAG,t.getResp());
+        String resp = t.getResp();
+        t.resetResp();
+        if(resp.contains("token")) {
+            Log.v(TAG,"Valid login");
+            try {
+                JSONObject loginResp = new JSONObject(resp);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Intent i = new Intent(MainActivity.this, DashboardActivity.class);
+            finish();  //Kill the activity from which you will go to next activity
+            startActivity(i);
+        } else {
+            Log.v(TAG,"Invalid login");
+        }
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
