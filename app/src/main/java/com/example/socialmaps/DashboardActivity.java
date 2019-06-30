@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.socialmaps.model.SaveSharedPreference;
 import com.google.android.gms.location.LocationServices;
@@ -59,6 +60,9 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(DashboardActivity.this, CameraActivity.class));
             }
         });
+
+        TextView userNameText = (TextView) findViewById(R.id.usernameText);
+        userNameText.setText(SaveSharedPreference.getUserName(DashboardActivity.this));
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
