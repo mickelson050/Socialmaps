@@ -86,27 +86,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.toMapActivity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, MapActivity.class));
-            }
-        });
-
-        findViewById(R.id.toTextActivity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, TextPostActivity.class));
-            }
-        });
-
-        findViewById(R.id.toCameraActivity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, CameraActivity.class));
-            }
-        });
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
