@@ -61,6 +61,13 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.toFriendsActivity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(DashboardActivity.this, FriendsActivity.class));
+            }
+        });
+
         TextView userNameText = (TextView) findViewById(R.id.usernameText);
         userNameText.setText(SaveSharedPreference.getUserName(DashboardActivity.this));
     }
