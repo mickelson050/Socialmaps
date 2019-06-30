@@ -86,7 +86,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void takePicture(View view) {
-        if(MainActivity.getLat() != 0 && MainActivity.getLon() != 0) {
+        if(DashboardActivity.getLat() != 0 && DashboardActivity.getLon() != 0) {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -107,10 +107,10 @@ public class CameraActivity extends AppCompatActivity {
 
                 String fileDir = file.toString().substring(6);
 
-                Log.v(TAG, "normal lat and lon: " + MainActivity.getLat() + MainActivity.getLon());
+                Log.v(TAG, "normal lat and lon: " + DashboardActivity.getLat() + DashboardActivity.getLon());
 
-                String latt= String.valueOf(MainActivity.getLat());
-                String lonn = String.valueOf(MainActivity.getLon());
+                String latt= String.valueOf(DashboardActivity.getLat());
+                String lonn = String.valueOf(DashboardActivity.getLon());
 
                 Log.v(TAG, "parameter lat and lon: " + latt + lonn);
 

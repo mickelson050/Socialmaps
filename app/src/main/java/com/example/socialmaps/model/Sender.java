@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.socialmaps.DashboardActivity;
 import com.example.socialmaps.MainActivity;
 
 import java.io.BufferedReader;
@@ -26,8 +27,8 @@ public class Sender extends AsyncTask<Void,Void,String> {
     String urlAddress;
     EditText userTxt,contentTxt,publiTxt;
     String user,content, publi;
-    Double lat = MainActivity.getLat();
-    Double lon = MainActivity.getLon();
+    Double lat = DashboardActivity.getLat();
+    Double lon = DashboardActivity.getLon();
     ProgressDialog pd;
     /*
     1.OUR CONSTRUCTOR

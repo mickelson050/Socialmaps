@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.socialmaps.model.PhotoSender;
+import com.example.socialmaps.model.SaveSharedPreference;
 import com.example.socialmaps.model.Sender;
 import com.example.socialmaps.model.TestSender;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,6 +24,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
@@ -43,9 +46,7 @@ public class TextPostActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 //INITIALIZE UI FIELDS
-        userTxt= (EditText) findViewById(R.id.userText);
         contentTxt= (EditText) findViewById(R.id.contentText);
-        publiTxt= (EditText) findViewById(R.id.publicText);
         saveBtn= (Button) findViewById(R.id.saveBtn);
         findViewById(R.id.saveBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,18 +61,17 @@ public class TextPostActivity extends AppCompatActivity {
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
-        hmap.put("user", userTxt.getText().toString());
-        hmap.put("lat", Double.toString(MainActivity.getLat()));
-        hmap.put("lon", Double.toString(MainActivity.getLon()));
+        hmap.put("user", SaveSharedPreference.getUserID(TextPostActivity.this));
+        hmap.put("username", SaveSharedPreference.getUserName(TextPostActivity.this));
+        hmap.put("lat", Double.toString(DashboardActivity.getLat()));
+        hmap.put("lon", Double.toString(DashboardActivity.getLon()));
         hmap.put("content", contentTxt.getText().toString());
-        hmap.put("public", publiTxt.getText().toString());
+        hmap.put("public", "0");
 
         TestSender t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/new_text_post",hmap);
 
-        userTxt.setText("");
         contentTxt.setText("");
-        publiTxt.setText("");
     }
 
     public void postDone() {
