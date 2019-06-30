@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,17 +16,22 @@ import android.widget.Toast;
 import com.example.socialmaps.model.Register;
 import com.example.socialmaps.model.TestSender;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final String TAG = "RegisterActivity";
     String urlAdress = "http://socialmaps.dx.am/register.php";
     private EditText userName, userFirstName, userLastName, userPassword, userConfirmPassword, userEmail, userBirthdate, userGender, userHabitation;
 
     private Button register;
     private TextView signInActivity;
+    private TestSender t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +56,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view){
                 if(register()){
                     postTheStuff();
-                    Toast.makeText(RegisterActivity.this, "Registration succesfull", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 }
             }
         });
@@ -129,6 +134,9 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill in your email", Toast.LENGTH_SHORT).show();
 
         }
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+        }
         else if(birthdate.isEmpty()) {
             Toast.makeText(this, "Please fill in your birthdate", Toast.LENGTH_SHORT).show();
         }
@@ -161,7 +169,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-        TestSender t = new TestSender();
+        t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/register",hmap);
 
         userFirstName.setText("");
@@ -173,10 +181,25 @@ public class RegisterActivity extends AppCompatActivity {
         userHabitation.setText("");
         userGender.setText("");
 
-    }
-
-    public void postDone() {
+        checkValidEmail();
 
     }
+    public synchronized void checkValidEmail() {
+        while (t.getResp()==null);
+        String resp = t.getResp();
+        t.resetResp();
+        if(resp.contains("token")) {
+            Toast.makeText(this, "register succesfull", Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(RegisterActivity.this, MainActivity.class);
+            finish();  //Kill the activity from which you will go to next activity
+            startActivity(i);
+        } else {
+            Toast.makeText(this, "email is already registered", Toast.LENGTH_SHORT).show();
+        }
+
+        }
+
+
 
 }
