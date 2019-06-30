@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.socialmaps.model.SaveSharedPreference;
 import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkAlreadyLogin();
+
         findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +98,34 @@ public class MainActivity extends AppCompatActivity {
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
                 minDistance, mLocationListener);
+    }
+
+    private void checkAlreadyLogin() {
+        String savedToken = SaveSharedPreference.getToken(MainActivity.this);
+        HashMap<String, String> loggedMap = new HashMap<String, String>();
+
+        loggedMap.put("token", savedToken);
+
+        t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/mobileVerifyToken",loggedMap);
+
+        waitForLoggedResp();
+    }
+
+    private synchronized void waitForLoggedResp() {
+        while (t.getResp()==null);
+        Log.v(TAG,t.getResp());
+        String resp = t.getResp();
+        t.resetResp();
+        if(resp.contains("goodToken")) {
+            Log.v(TAG,"Good token saved, loggin in...");
+
+            Intent i = new Intent(MainActivity.this, DashboardActivity.class);
+            finish();  //Kill the activity from which you will go to next activity
+            startActivity(i);
+        } else {
+            Log.v(TAG,"Bas token save, doing nothing...");
+        }
     }
 
     private static String getmd5(String password){
@@ -149,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG,"Valid login");
             try {
                 JSONObject loginResp = new JSONObject(resp);
+                putInPrefs(loginResp);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -159,6 +191,18 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.v(TAG,"Invalid login");
         }
+    }
+
+    private void putInPrefs(JSONObject loginResp) throws JSONException {
+        String token = loginResp.getString("token");
+        JSONObject user = loginResp.getJSONObject("userObject");
+        String userName = user.getString("username");
+        String userID = user.getString("_id");
+        Log.v(TAG,"Token: " + token + " Username: " + userName + " UserID: " + userID);
+        SaveSharedPreference.setUserName(MainActivity.this, userName);
+        SaveSharedPreference.setUserID(MainActivity.this, userID);
+        SaveSharedPreference.setToken(MainActivity.this, token);
+        Log.v(TAG,"Preferences!! Token: " + SaveSharedPreference.getToken(MainActivity.this) + " Username: " + SaveSharedPreference.getUserName(MainActivity.this) + " UserID: " + SaveSharedPreference.getUserID(MainActivity.this));
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
