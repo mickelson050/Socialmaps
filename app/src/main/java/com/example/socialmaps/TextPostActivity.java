@@ -63,8 +63,8 @@ public class TextPostActivity extends AppCompatActivity {
         /*Adding elements to HashMap*/
         hmap.put("user", SaveSharedPreference.getUserID(TextPostActivity.this));
         hmap.put("username", SaveSharedPreference.getUserName(TextPostActivity.this));
-        hmap.put("lat", Double.toString(MainActivity.getLat()));
-        hmap.put("lon", Double.toString(MainActivity.getLon()));
+        hmap.put("lat", Double.toString(DashboardActivity.getLat()));
+        hmap.put("lon", Double.toString(DashboardActivity.getLon()));
         hmap.put("content", contentTxt.getText().toString());
         hmap.put("public", "0");
 

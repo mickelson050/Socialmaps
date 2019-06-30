@@ -176,8 +176,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latOffset =  0.0003;
         double lonOffset =  0.0006;
 
-        double lat = MainActivity.getLat();
-        double lon = MainActivity.getLon();
+        double lat = DashboardActivity.getLat();
+        double lon = DashboardActivity.getLon();
 
         double markerLat = marker.getPosition().latitude;
         double markerLon = marker.getPosition().longitude;
@@ -221,8 +221,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void centerMapOnMyLocation() {
 
-        LatLng myLocation = new LatLng(MainActivity.getLat(),
-                    MainActivity.getLon());
+        LatLng myLocation = new LatLng(DashboardActivity.getLat(),
+                DashboardActivity.getLon());
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
     }

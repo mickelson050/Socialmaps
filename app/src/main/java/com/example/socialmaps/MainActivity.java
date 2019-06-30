@@ -53,10 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    public LocationManager mLocationManager;
-    private long minTime = 0;
-    private float minDistance = 0;
-
     public static double lat;
     public static double lon;
 
@@ -91,13 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
-                minDistance, mLocationListener);
     }
 
     private void checkAlreadyLogin() {
@@ -203,40 +192,6 @@ public class MainActivity extends AppCompatActivity {
         SaveSharedPreference.setUserID(MainActivity.this, userID);
         SaveSharedPreference.setToken(MainActivity.this, token);
         Log.v(TAG,"Preferences!! Token: " + SaveSharedPreference.getToken(MainActivity.this) + " Username: " + SaveSharedPreference.getUserName(MainActivity.this) + " UserID: " + SaveSharedPreference.getUserID(MainActivity.this));
-    }
-
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            //Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
-
-
-    public static Double getLat() {
-        return lat;
-    }
-
-    public static Double getLon() {
-        return lon;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
