@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -128,6 +129,9 @@ public class RegisterActivity extends AppCompatActivity {
         else if (email.isEmpty()) {
             Toast.makeText(this, "Please fill in your email", Toast.LENGTH_SHORT).show();
 
+        }
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
         }
         else if(birthdate.isEmpty()) {
             Toast.makeText(this, "Please fill in your birthdate", Toast.LENGTH_SHORT).show();
