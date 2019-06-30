@@ -17,6 +17,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -204,10 +206,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
-//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        PolylineOptions rectOptions = new PolylineOptions()
+//                .add(new LatLng(lat+latOffset, lon+lonOffset))
+//                .add(new LatLng(lat+latOffset, lon-lonOffset))
+//                .add(new LatLng(lat-latOffset, lon-lonOffset))
+//                .add(new LatLng(lat-latOffset, lon+lonOffset))
+//                .add(new LatLng(lat+latOffset, lon+lonOffset));
+//
+//        Polyline polyline = map.addPolyline(rectOptions);
 
         return true;
 

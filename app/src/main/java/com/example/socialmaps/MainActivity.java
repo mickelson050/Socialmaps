@@ -14,13 +14,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,6 +31,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 import static com.example.socialmaps.util.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.socialmaps.util.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -47,11 +59,25 @@ public class MainActivity extends AppCompatActivity {
     public static double lat;
     public static double lon;
 
+    private TestSender t;
+
+    private EditText loginEmail;
+    private EditText loginPassword;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginEmail= (EditText) findViewById(R.id.loginEmail);
+                loginPassword= (EditText) findViewById(R.id.loginPassword);
+                login();
+            }
+        });
 
         findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +116,70 @@ public class MainActivity extends AppCompatActivity {
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,
                 minDistance, mLocationListener);
+    }
+
+    private static String getmd5(String password){
+        try {
+
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // digest() method is called to calculate message digest
+            //  of an input digest() return array of byte
+            byte[] messageDigest = md.digest(password.getBytes());
+
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, messageDigest);
+
+            // Convert message digest into hex value
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void login() {
+
+        String hashedPass = getmd5(loginPassword.getText().toString());
+        Log.v(TAG, hashedPass);
+
+        HashMap<String, String> loginMap = new HashMap<String, String>();
+
+        loginMap.put("email", loginEmail.getText().toString());
+        loginMap.put("password", hashedPass);
+
+        t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/login",loginMap);
+
+        waitForResp();
+    }
+
+    private synchronized void waitForResp() {
+        while (t.getResp()==null);
+        Log.v(TAG,t.getResp());
+        String resp = t.getResp();
+        t.resetResp();
+        if(resp.contains("token")) {
+            Log.v(TAG,"Valid login");
+            try {
+                JSONObject loginResp = new JSONObject(resp);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Intent i = new Intent(MainActivity.this, DashboardActivity.class);
+            finish();  //Kill the activity from which you will go to next activity
+            startActivity(i);
+        } else {
+            Log.v(TAG,"Invalid login");
+        }
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
