@@ -12,11 +12,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.socialmaps.model.Register;
+import com.example.socialmaps.model.TestSender;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
     String urlAdress = "http://socialmaps.dx.am/register.php";
-    private EditText userName, userFirstName, userLastName, userPassword, userConfirmPassword, userEmail, userBirthdate;
-    private RadioButton userMale, userFemale;
+    private EditText userName, userFirstName, userLastName, userPassword, userConfirmPassword, userEmail, userBirthdate, userGender, userHabitation;
+
     private Button register;
     private TextView signInActivity;
 
@@ -24,14 +30,27 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        construct();
+        userName = (EditText) findViewById(R.id.registerUsername);
+        userFirstName = (EditText) findViewById(R.id.registerFirstName);
+        userLastName = (EditText) findViewById(R.id.registerLastName);
+        userBirthdate = (EditText) findViewById(R.id.registerBirthdate);
+        userPassword = (EditText) findViewById(R.id.registerUserPassword);
+        userConfirmPassword = (EditText) findViewById(R.id.registerConfirmPassword);
+        userEmail = (EditText) findViewById(R.id.registerEmail);
+        userGender = (EditText) findViewById(R.id.registerGender);
+        userHabitation = (EditText)findViewById(R.id.registerHabitation);
+
+        signInActivity = (TextView) findViewById(R.id.loginActivity);
+
+        register = (Button) findViewById(R.id.register);
 
         register.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(register()){
-                    Register r = new Register(RegisterActivity.this,urlAdress, userFirstName,userLastName,userName,userPassword,userBirthdate, userEmail);
-                    r.execute();
+                    postTheStuff();
+                    Toast.makeText(RegisterActivity.this, "Registration succesfull", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 }
             }
         });
@@ -44,19 +63,35 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void construct(){
-        userName = (EditText) findViewById(R.id.registerUsername);
-        userFirstName = (EditText) findViewById(R.id.registerFirstName);
-        userLastName = (EditText) findViewById(R.id.registerLastName);
-        userBirthdate = (EditText) findViewById(R.id.registerBirthdate);
-        userPassword = (EditText) findViewById(R.id.registerUserPassword);
-        userConfirmPassword = (EditText) findViewById(R.id.registerConfirmPassword);
-        userEmail = (EditText) findViewById(R.id.registerEmail);
-        userMale = (RadioButton) findViewById(R.id.registerMale);
-        userFemale = (RadioButton) findViewById(R.id.registerFemale);
-        signInActivity = (TextView) findViewById(R.id.loginActivity);
+    public static String getmd5(String password){
+        try {
 
-        register = (Button) findViewById(R.id.register); }
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // digest() method is called to calculate message digest
+            //  of an input digest() return array of byte
+            byte[] messageDigest = md.digest(password.getBytes());
+
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, messageDigest);
+
+            // Convert message digest into hex value
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
     private Boolean register() {
         boolean result = false;
@@ -67,8 +102,9 @@ public class RegisterActivity extends AppCompatActivity {
         String firstname = userFirstName.getText().toString();
         String lastName = userLastName.getText().toString();
         String birthdate = userBirthdate.getText().toString();
-        String male = userMale.getText().toString();
-        String female = userFemale.getText().toString();
+        String gender = userGender.getText().toString();
+        String habitation = userHabitation.getText().toString();
+
 
         if (password.isEmpty() || confirmpassword.isEmpty()) {
             Toast.makeText(this, "Please fill the password in twice", Toast.LENGTH_SHORT).show();
@@ -96,14 +132,51 @@ public class RegisterActivity extends AppCompatActivity {
         else if(birthdate.isEmpty()) {
             Toast.makeText(this, "Please fill in your birthdate", Toast.LENGTH_SHORT).show();
         }
-        else if (male.isEmpty() && female.isEmpty()){
-            Toast.makeText(this, "please fill in your gender", Toast.LENGTH_SHORT).show();
+        else if (gender.isEmpty()){
+            Toast.makeText(this, "Please fill in your gender", Toast.LENGTH_SHORT).show();
+        }
+        else if (habitation.isEmpty()){
+            Toast.makeText(this, "Please fill in your habitation", Toast.LENGTH_SHORT).show();
         }
         else {
             result = true;
         }
 
         return result;
+    }
+
+    private void postTheStuff() {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        /*Adding elements to HashMap*/
+        hmap.put("firstname", userFirstName.getText().toString().trim());
+        hmap.put("lastname", userLastName.getText().toString().trim());
+        hmap.put("username", userName.getText().toString().trim());
+        hmap.put("password", getmd5(userPassword.getText().toString()));
+        hmap.put("email", userEmail.getText().toString().trim());
+        hmap.put("birthdate", userBirthdate.getText().toString().trim());
+        hmap.put("habitation", userHabitation.getText().toString().trim());
+        hmap.put("gender", userGender.getText().toString().trim());
+
+
+
+
+        TestSender t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/register",hmap);
+
+        userFirstName.setText("");
+        userLastName.setText("");
+        userName.setText("");
+        userPassword.setText("");
+        userEmail.setText("");
+        userBirthdate.setText("");
+        userHabitation.setText("");
+        userGender.setText("");
+
+    }
+
+    public void postDone() {
+
     }
 
 }
