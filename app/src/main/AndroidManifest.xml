@@ -23,7 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DashboardActivity"></activity>
+        <activity android:name=".FollowActivity"></activity>
+        <activity android:name=".DashboardActivity" />
         <activity android:name=".CameraActivity" />
         <activity
             android:name=".TextPostActivity"
