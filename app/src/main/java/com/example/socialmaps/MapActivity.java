@@ -1,15 +1,20 @@
 package com.example.socialmaps;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
 import com.example.socialmaps.model.TestSender;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,7 +34,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private MapView mMapView;
 
@@ -95,12 +100,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
+        map.setOnMarkerClickListener(this);
         getMapPoints();
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         map.setMyLocationEnabled(true);
+        centerMapOnMyLocation();
     }
 
     @Override
@@ -153,8 +159,66 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Double lat = Double.parseDouble(obj.getString("lat"));
             Double lon = Double.parseDouble(obj.getString("lon"));
             String content = obj.getString("content");
-            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(content));
+            String _id = obj.getString("_id");
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(_id).snippet(content));
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        String markTitle = marker.getTitle();
+
+        Log.v(TAG, "Marker: " + markTitle);
+
+        double latOffset =  0.0003;
+        double lonOffset =  0.0006;
+
+        double lat = MainActivity.getLat();
+        double lon = MainActivity.getLon();
+
+        double markerLat = marker.getPosition().latitude;
+        double markerLon = marker.getPosition().longitude;
+
+        Log.v(TAG, "Marker position: " + markerLat + " , " + markerLon);
+        Log.v(TAG, "Your position: " + lat + " , " + lon);
+
+        // If user latitude is within the range of the marker
+        if(markerLat-latOffset <= lat && markerLat+latOffset >= lat) {
+            // And if user longitude is within the range of the marker
+            if(markerLon-lonOffset <= lon && markerLon+lonOffset >= lon) {
+                Log.v(TAG, "Content: " + marker.getSnippet());
+                Log.v(TAG, "IN RANGE");
+
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+                dlgAlert.setMessage(marker.getSnippet());
+                dlgAlert.setTitle("New message found");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //dismiss the dialog
+                            }
+                        });
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+            }
+        }
+
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat+latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon+lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//        map.addMarker(new MarkerOptions().position(new LatLng(lat-latOffset, lon-lonOffset)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        return true;
+
+    }
+
+    private void centerMapOnMyLocation() {
+
+        LatLng myLocation = new LatLng(MainActivity.getLat(),
+                    MainActivity.getLon());
+
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
     }
 
 }

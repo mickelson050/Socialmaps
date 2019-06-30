@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(final Location location) {
             //your code here
-            Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
+            //Log.d(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
             lat = location.getLatitude();
             lon = location.getLongitude();
         }
