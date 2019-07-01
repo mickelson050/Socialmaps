@@ -14,7 +14,11 @@ import android.widget.Toast;
 import com.example.socialmaps.model.SaveSharedPreference;
 import com.example.socialmaps.model.TestSender;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class FollowActivity extends AppCompatActivity {
 
@@ -23,6 +27,8 @@ public class FollowActivity extends AppCompatActivity {
     private EditText username;
     private Button searchUsername;
     private TextView list;
+
+    private TextView userList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +37,7 @@ public class FollowActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.searchuser);
         searchUsername = (Button)findViewById(R.id.Search);
         list = (TextView)findViewById(R.id.searchlistview);
+        userList = (TextView) findViewById(R.id.userList);
         searchUsername.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,11 +62,21 @@ public class FollowActivity extends AppCompatActivity {
         while (t.getResp()==null);
         String resp = t.getResp();
 
+        userList.setText("");
+
         if(resp.equals("nothingFound")) {
             list.setText("No one is found");
-        }else{
+        }else {
             list.setText("found ");
-            Toast.makeText(this, ""+ t.getResp(), Toast.LENGTH_SHORT).show();
+            try {
+                JSONObject users = new JSONObject(t.getResp());
+                for(int i = 0; i<users.names().length(); i++){
+                    Log.v(TAG, "key = " + users.names().getString(i) + " value = " + users.get(users.names().getString(i)));
+                    userList.append(users.get(users.names().getString(i)).toString() + "\n\n");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
     }
