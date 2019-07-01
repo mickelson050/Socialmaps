@@ -79,12 +79,12 @@ public class FollowActivity extends AppCompatActivity {
 
         if (resp.equals("nothingFound")) {
             list.setText("No one is found");
+            mAdapter.notifyDataSetChanged();
         } else {
             list.setText("found ");
             try {
                 JSONObject users = new JSONObject(t.getResp());
                 for (int i = 0; i < users.names().length(); i++) {
-                    Log.v(TAG, "key = " + users.names().getString(i) + " value = " + users.get(users.names().getString(i)));
                     mItems.add(users.get(users.names().getString(i)).toString());
                 }
                 mAdapter.notifyDataSetChanged();
