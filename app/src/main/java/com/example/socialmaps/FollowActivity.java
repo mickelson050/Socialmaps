@@ -199,6 +199,8 @@ public class FollowActivity extends AppCompatActivity {
         hmap.put("follow", username);
         TestSender t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/follow", hmap);
+        getFollowers();
+        mAdapter.notifyDataSetChanged();
     }
 
     private void unfollowUser(String username) {
@@ -208,5 +210,7 @@ public class FollowActivity extends AppCompatActivity {
         hmap.put("unfollow", username);
         TestSender t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/unfollow", hmap);
+        getFollowers();
+        mAdapter.notifyDataSetChanged();
     }
 }
