@@ -51,7 +51,7 @@ public class FriendsActivity extends AppCompatActivity {
         while (t.getResp()==null);
         Log.v(TAG,t.getResp());
 
-        if(t.getResp() == "noFollowersFound") {
+        if(t.getResp() == "nothingFound") {
             listHeader.setText("You dont follow anyone yet");
         }
 

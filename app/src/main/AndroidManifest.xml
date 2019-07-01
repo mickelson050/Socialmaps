@@ -26,6 +26,7 @@
         <activity android:name=".FriendsActivity"></activity>
         <activity android:name=".DashboardActivity" />
         <activity android:name=".CameraActivity" />
+        <activity android:name=".FollowActivity"/>
         <activity
             android:name=".TextPostActivity"
             android:label="@string/title_activity_text_post"
