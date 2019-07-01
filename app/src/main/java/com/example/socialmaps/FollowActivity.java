@@ -28,10 +28,13 @@ import java.util.Iterator;
 public class FollowActivity extends AppCompatActivity {
 
     private static final String TAG = "FollowActivity";
-    TestSender t;
+    private TestSender t;
+    private TestSender t2;
     private EditText username;
     private Button searchUsername;
     private TextView list;
+
+    private String followers;
 
     private TextView userList;
 
@@ -57,6 +60,7 @@ public class FollowActivity extends AppCompatActivity {
 
         initData();
         initRecyclerView();
+        getFollowers();
     }
 
     public void getUsers() {
@@ -95,6 +99,33 @@ public class FollowActivity extends AppCompatActivity {
 
     }
 
+    private void getFollowers() {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        /*Adding elements to HashMap*/
+        hmap.put("username", SaveSharedPreference.getUserName(FollowActivity.this));
+
+        t2 = new TestSender();
+        t2.doThePost("http://socialmaps.openode.io/api/getFollowers",hmap);
+
+
+        waitForFollowersResponse();
+
+    }
+
+    private synchronized void waitForFollowersResponse() {
+        while (t2.getResp()==null);
+        Log.v(TAG,t2.getResp());
+
+        if(t2.getResp() == "nothingFound") {
+            followers = null;
+        } else {
+            followers = t2.getResp();
+        }
+
+        Log.v(TAG,"You follow: " + followers);
+    }
+
     private void initData() {
         mItems = new ArrayList<String>();
     }
@@ -117,12 +148,25 @@ public class FollowActivity extends AppCompatActivity {
             @Override
             public void onBindViewHolder(CustomViewHolder viewHolder, final int i) {
                 viewHolder.noticeSubject.setText((CharSequence) mItems.get(i));
-                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        followUser((String) mItems.get(i));
-                    }
-                });
+                if(followers.contains("\"" + (CharSequence) mItems.get(i) + "\"")) {
+                    viewHolder.followButton.setText("UNFOLLOW");
+                    viewHolder.followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            unfollowUser((String) mItems.get(i));
+                        }
+                    });
+                } else {
+                    viewHolder.followButton.setText("FOLLOW");
+                    viewHolder.followButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            followUser((String) mItems.get(i));
+                        }
+                    });
+                }
             }
 
             @Override
@@ -155,5 +199,14 @@ public class FollowActivity extends AppCompatActivity {
         hmap.put("follow", username);
         TestSender t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/follow", hmap);
+    }
+
+    private void unfollowUser(String username) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        hmap.put("username", SaveSharedPreference.getUserName(FollowActivity.this));
+        hmap.put("unfollow", username);
+        TestSender t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/unfollow", hmap);
     }
 }

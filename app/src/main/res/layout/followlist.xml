@@ -24,13 +24,13 @@
 
     <Button
         android:id="@+id/followButton"
-        android:layout_width="80dp"
+        android:layout_width="82dp"
         android:layout_height="50dp"
         android:layout_marginStart="-10dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="30dp"
-        android:backgroundTint="@color/colorPrimary"
+        android:background="@color/colorPrimary"
         android:text="Follow"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>
