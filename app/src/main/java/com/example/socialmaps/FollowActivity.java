@@ -115,8 +115,14 @@ public class FollowActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onBindViewHolder(CustomViewHolder viewHolder, int i) {
+            public void onBindViewHolder(CustomViewHolder viewHolder, final int i) {
                 viewHolder.noticeSubject.setText((CharSequence) mItems.get(i));
+                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        followUser((String) mItems.get(i));
+                    }
+                });
             }
 
             @Override
@@ -132,11 +138,22 @@ public class FollowActivity extends AppCompatActivity {
     private class CustomViewHolder extends RecyclerView.ViewHolder {
 
         private TextView noticeSubject;
+        private Button followButton;
 
         public CustomViewHolder(View itemView) {
             super(itemView);
 
             noticeSubject = (TextView) itemView.findViewById(R.id.notice_subject);
+            followButton = (Button) itemView.findViewById(R.id.followButton);
         }
+    }
+
+    private void followUser(String username) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+
+        hmap.put("username", SaveSharedPreference.getUserName(FollowActivity.this));
+        hmap.put("follow", username);
+        TestSender t = new TestSender();
+        t.doThePost("http://socialmaps.openode.io/api/follow", hmap);
     }
 }
