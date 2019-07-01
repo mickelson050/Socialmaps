@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.example.socialmaps.model.SaveSharedPreference;
 import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -133,7 +134,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
-        hmap.put("User", "88");
+        hmap.put("username", SaveSharedPreference.getUserName(MapActivity.this));
 
         t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/getAllPosts",hmap);
@@ -157,12 +158,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void placePointsOnMap() throws JSONException {
         for (int i = 0; i < mapPoints.length(); i++) {
             JSONObject obj = mapPoints.getJSONObject(i);
-            String user = obj.getString("user");
+            String username = obj.getString("username");
             Double lat = Double.parseDouble(obj.getString("lat"));
             Double lon = Double.parseDouble(obj.getString("lon"));
             String content = obj.getString("content");
             String _id = obj.getString("_id");
-            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(_id).snippet(content));
+            map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(username).snippet(content));
         }
     }
 
@@ -185,16 +186,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.v(TAG, "Marker position: " + markerLat + " , " + markerLon);
         Log.v(TAG, "Your position: " + lat + " , " + lon);
 
+        boolean inRange = false;
+
         // If user latitude is within the range of the marker
         if(markerLat-latOffset <= lat && markerLat+latOffset >= lat) {
             // And if user longitude is within the range of the marker
             if(markerLon-lonOffset <= lon && markerLon+lonOffset >= lon) {
+                inRange = true;
                 Log.v(TAG, "Content: " + marker.getSnippet());
                 Log.v(TAG, "IN RANGE");
 
                 AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
                 dlgAlert.setMessage(marker.getSnippet());
-                dlgAlert.setTitle("New message found");
+                dlgAlert.setTitle("Message from " + marker.getTitle());
                 dlgAlert.setPositiveButton("Ok",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -204,6 +208,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 dlgAlert.setCancelable(true);
                 dlgAlert.create().show();
             }
+        }
+
+        if(inRange == false) {
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("Posted by: " + marker.getTitle());
+            dlgAlert.setTitle("Message to far away");
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dismiss the dialog
+                        }
+                    });
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
         }
 
 //        PolylineOptions rectOptions = new PolylineOptions()

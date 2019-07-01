@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
     }
 
     private void checkAlreadyLogin() {
@@ -117,41 +116,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static String getmd5(String password){
-        try {
-
-            // Static getInstance method is called with hashing MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-
-            // digest() method is called to calculate message digest
-            //  of an input digest() return array of byte
-            byte[] messageDigest = md.digest(password.getBytes());
-
-            // Convert byte array into signum representation
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert message digest into hex value
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-            return hashtext;
-        }
-
-        // For specifying wrong message digest algorithms
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    private static String getmd5(String password){
+//        try {
+//
+//            // Static getInstance method is called with hashing MD5
+//            MessageDigest md = MessageDigest.getInstance("MD5");
+//
+//            // digest() method is called to calculate message digest
+//            //  of an input digest() return array of byte
+//            byte[] messageDigest = md.digest(password.getBytes());
+//
+//            // Convert byte array into signum representation
+//            BigInteger no = new BigInteger(1, messageDigest);
+//
+//            // Convert message digest into hex value
+//            String hashtext = no.toString(16);
+//            while (hashtext.length() < 32) {
+//                hashtext = "0" + hashtext;
+//            }
+//            return hashtext;
+//        }
+//
+//        // For specifying wrong message digest algorithms
+//        catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     private void login() {
 
-        String hashedPass = getmd5(loginPassword.getText().toString());
-        Log.v(TAG, hashedPass);
+        //String hashedPass = getmd5(loginPassword.getText().toString());
+        String hashedPass = loginPassword.getText().toString();
 
         HashMap<String, String> loginMap = new HashMap<String, String>();
 
-        loginMap.put("email", loginEmail.getText().toString());
+        loginMap.put("email", loginEmail.getText().toString().trim());
         loginMap.put("password", hashedPass);
 
         t = new TestSender();
@@ -162,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     private synchronized void waitForResp() {
         while (t.getResp()==null);
-        Log.v(TAG,t.getResp());
         String resp = t.getResp();
         t.resetResp();
         if(resp.contains("token")) {
