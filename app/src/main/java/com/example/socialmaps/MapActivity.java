@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.example.socialmaps.model.SaveSharedPreference;
 import com.example.socialmaps.model.TestSender;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -133,7 +134,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         HashMap<String, String> hmap = new HashMap<String, String>();
 
         /*Adding elements to HashMap*/
-        hmap.put("User", "88");
+        hmap.put("username", SaveSharedPreference.getUserName(MapActivity.this));
 
         t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/getAllPosts",hmap);
