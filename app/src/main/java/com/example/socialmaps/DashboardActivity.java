@@ -41,6 +41,7 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLastKnownLocation();
 

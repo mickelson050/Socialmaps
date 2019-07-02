@@ -38,6 +38,8 @@ public class TextPostActivity extends AppCompatActivity {
     EditText userTxt,contentTxt,publiTxt;
     Button saveBtn;
 
+    private TestSender t;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class TextPostActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
     private void postTheStuff() {
@@ -68,13 +71,17 @@ public class TextPostActivity extends AppCompatActivity {
         hmap.put("content", contentTxt.getText().toString());
         hmap.put("public", "0");
 
-        TestSender t = new TestSender();
+        t = new TestSender();
         t.doThePost("http://socialmaps.openode.io/api/new_text_post",hmap);
 
         contentTxt.setText("");
+
+        waitForResponse();
     }
 
-    public void postDone() {
+    private synchronized void waitForResponse() {
+        while (t.getResp()==null);
+        Log.v(TAG,t.getResp());
 
     }
 
