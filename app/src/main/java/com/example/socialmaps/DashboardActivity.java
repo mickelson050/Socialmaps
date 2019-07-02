@@ -108,6 +108,7 @@ public class DashboardActivity extends AppCompatActivity {
         return lat;
     }
 
+
     public static Double getLon() {
         return lon;
     }
