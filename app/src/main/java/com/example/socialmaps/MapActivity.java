@@ -137,7 +137,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         hmap.put("username", SaveSharedPreference.getUserName(MapActivity.this));
 
         t = new TestSender();
-        t.doThePost("http://socialmaps.openode.io/api/getAllPosts",hmap);
+        t.doThePost("http://socialmaps.openode.io/api/getFollowerPosts",hmap);
 
 
         waitForPoints();
