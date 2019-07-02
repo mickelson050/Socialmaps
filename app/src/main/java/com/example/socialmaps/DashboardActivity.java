@@ -121,7 +121,7 @@ public class DashboardActivity extends AppCompatActivity {
                 locationManagerInit = true;
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }
-            Log.v(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
+            //Log.v(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
             lat = location.getLatitude();
             lon = location.getLongitude();
         }
