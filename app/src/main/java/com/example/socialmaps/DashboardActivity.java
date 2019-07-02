@@ -35,6 +35,8 @@ public class DashboardActivity extends AppCompatActivity {
     public static double lat;
     public static double lon;
 
+    private boolean locationManagerInit = false;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +117,10 @@ public class DashboardActivity extends AppCompatActivity {
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            //your code here
+            if(locationManagerInit == false) {
+                locationManagerInit = true;
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }
             Log.v(TAG, "onLocationChanged: lat: "+location.getLatitude()+" lon: "+location.getLongitude());
             lat = location.getLatitude();
             lon = location.getLongitude();
