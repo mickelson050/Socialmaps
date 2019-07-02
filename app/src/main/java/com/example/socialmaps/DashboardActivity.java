@@ -70,12 +70,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.toCameraActivity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this, CameraActivity.class));
-            }
-        });
 
         findViewById(R.id.toFriendsActivity).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +87,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         TextView userNameText = (TextView) findViewById(R.id.usernameText);
         userNameText.setText(SaveSharedPreference.getUserName(DashboardActivity.this));
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
