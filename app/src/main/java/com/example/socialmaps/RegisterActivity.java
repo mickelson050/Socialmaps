@@ -195,7 +195,7 @@ public class RegisterActivity extends AppCompatActivity {
             finish();  //Kill the activity from which you will go to next activity
             startActivity(i);
         } else {
-            Toast.makeText(this, "email is already registered", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "email or username already exist", Toast.LENGTH_SHORT).show();
         }
 
         }
