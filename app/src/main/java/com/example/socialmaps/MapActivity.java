@@ -174,8 +174,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Log.v(TAG, "Marker: " + markTitle);
 
-        double latOffset =  0.0003;
-        double lonOffset =  0.0006;
+        double latOffset =  0.0012;
+        double lonOffset =  0.0024;
 
         double lat = DashboardActivity.getLat();
         double lon = DashboardActivity.getLon();

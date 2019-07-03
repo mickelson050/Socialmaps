@@ -87,6 +87,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         TextView userNameText = (TextView) findViewById(R.id.usernameText);
         userNameText.setText(SaveSharedPreference.getUserName(DashboardActivity.this));
+
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 

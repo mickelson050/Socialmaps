@@ -99,8 +99,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:background="@color/cardview_dark_background"
-        android:clickable="true"
-        android:visibility="gone">
+        android:clickable="true">
 
         <ProgressBar
             android:id="@+id/progress"
